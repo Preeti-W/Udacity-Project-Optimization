@@ -558,6 +558,7 @@ document.addEventListener('DOMContentLoaded', function () {
   pizzaElement.src = "images/pizza.png";
   pizzaElement.style.height = "100px";
   pizzaElement.style.width = "73.333px";
+  pizzaElement.style.transform = "translate3d(0,0,0)";
 
   for (var i = 0; i < 32; i++) {
       CloneAndAppendNewPizzaElement(pizzaElement, i);
