@@ -536,18 +536,33 @@ function updatePositions() {
 window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
-document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8;
-  var s = 256;
-  for (var i = 0; i < 32; i++) {
-    var elem = document.createElement('img');
-    elem.className = 'mover';
-    elem.src = "images/pizza.png";
-    elem.style.height = "100px";
-    elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * s;
-    elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+document.addEventListener('DOMContentLoaded', function () {
+  var phaseArray = getPhaseArray();
+  var fragment = document.createDocumentFragment();
+
+  function CloneAndAppendNewPizzaElement(pizzaElement, i) {
+    var cols = 8;
+    var s = 256;
+
+    var clonedPizza = pizzaElement.cloneNode(true);
+    var basicLeft = (i % cols) * s;
+    clonedPizza.basicLeft = basicLeft;
+    clonedPizza.style.top = (Math.floor(i / cols) * s) + 'px';
+    clonedPizza.style.left = basicLeft + phaseArray[i % PHASE_COUNT] + 'px';
+
+    fragment.appendChild(clonedPizza);
   }
-  updatePositions();
+
+  var pizzaElement = document.createElement('img');
+  pizzaElement.className = 'mover';
+  pizzaElement.src = "images/pizza.png";
+  pizzaElement.style.height = "100px";
+  pizzaElement.style.width = "73.333px";
+
+  for (var i = 0; i < 32; i++) {
+      CloneAndAppendNewPizzaElement(pizzaElement, i);
+  }
+
+  var firstMovingPizza = document.getElementById("movingPizzas1");
+  firstMovingPizza.appendChild(fragment);
 });
