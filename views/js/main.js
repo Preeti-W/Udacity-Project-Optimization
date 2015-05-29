@@ -449,6 +449,10 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
+  /*
+  Originally, pizzeria.jpg was used. It was however unnecessarily big for index.html.
+  So pizzeria_100.jpg, which is a resized version of pizzeria.jpg, is used to speed up loading and to avoid resizing.
+  */
   function changePizzaSizes(size) {
     var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
     var pizza = randomPizzas[0];
@@ -512,6 +516,11 @@ function getPhaseArray() {
   return phaseArray;
 }
 
+/*
+Used getElementsByClassName instead of querySelectorAll to increase the query speed,
+Pre-calculated all phase offsets to remove the redundant calculation.
+Also called document.body.scrollTop only once to avoid unnecessary forced layouts.
+*/
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
@@ -540,6 +549,13 @@ window.addEventListener('scroll', function() {
 });
 
 // Generates the sliding pizzas when the page loads.
+/*
+Cloned an existing element instead of creating a new one every time to gain a bit of speed.
+Set the position style within the loop instead of calling updatePositions() to avoid another iteration of the same loop.
+Tse some of the refactored code from updatePositions() for DRY,
+Used document fragment to append elements (pizzas) in a single call to avoid multiple layouts.
+Also used translate3d to put each moving pizza on a new layer.
+*/
 document.addEventListener('DOMContentLoaded', function () {
   var phaseArray = getPhaseArray();
   var fragment = document.createDocumentFragment();
@@ -564,6 +580,9 @@ document.addEventListener('DOMContentLoaded', function () {
   pizzaElement.style.width = "73.333px";
   pizzaElement.style.transform = "translate3d(0,0,0)";
 
+  /*
+  Reduced the number of moving pizzas to 32, which is enough for most cases
+  */
   for (var i = 0; i < 32; i++) {
       CloneAndAppendNewPizzaElement(pizzaElement, i);
   }

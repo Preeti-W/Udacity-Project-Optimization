@@ -1,60 +1,68 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+  /*
+  Using the viewport meta tag to control layout on mobile browsers
+  */
   <meta name=viewport content="width=device-width, initial-scale=1">
 
+  /*
+  Inlined style.css here to avoid loading a blocking css. Since this css is relatively small,
+  it is acceptable to do so here.
+  */
+
   <style>
-    /** {
-        outline: 1px solid red !important;
-    }*/
-    * {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        -box-sizing: border-box;
-    }
+  /** {
+      outline: 1px solid red !important;
+  }*/
+  * {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -box-sizing: border-box;
+  }
 
-    body {
-        font-family: "Trebuchet MS", Helvetica, sans-serif;
-        background: black;
-    }
+  body {
+      font-family: "Trebuchet MS", Helvetica, sans-serif;
+      background: black;
+  }
 
-    input {
-        background: grey;
-        font-size: 18px;
-    }
+  input {
+      background: grey;
+      font-size: 18px;
+  }
 
-    form {
-        display: inline-block;
-    }
+  form {
+      display: inline-block;
+  }
 
-    .centered {
-        text-align: center;
-    }
+  .centered {
+      text-align: center;
+  }
 
-    #pizzaSize {
-        font-weight: 800;
-    }
+  #pizzaSize {
+      font-weight: 800;
+  }
 
-    .mover {
-        position: fixed;
-        width: 256px;
-        z-index: -1;
-    }
+  .mover {
+      position: fixed;
+      width: 256px;
+      z-index: -1;
+  }
 
-    .randomPizzaContainer {
-        float: left;
-        display: flex;
-    }
+  .randomPizzaContainer {
+      float: left;
+      display: flex;
+  }
 
-    .randomPizzaContainer:after {
-        content: "";
-        display: table;
-        clear: both;
-    }
+  .randomPizzaContainer:after {
+      content: "";
+      display: table;
+      clear: both;
+  }
 
-    .container {
-        background-color: rgba(240, 60, 60, 0.8);
-    }
+  .container {
+      background-color: rgba(240, 60, 60, 0.8);
+  }
   </style>
 
   <link rel="stylesheet" href="css/bootstrap-grid.css">
