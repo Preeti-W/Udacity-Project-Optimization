@@ -19,7 +19,6 @@ cameron *at* udacity *dot* com
 // As you may have realized, this website randomly generates pizzas.
 // Here are arrays of all possible pizza ingredients.
 
-
 "use strict";
 
 var pizzaIngredients = {};
@@ -454,9 +453,9 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
   /*
-  Originally, pizzeria.jpg was used. It was however unnecessarily big for index.html.
-  So pizzeria_100.jpg, which is a resized version of pizzeria.jpg, is used to speed up loading and to avoid resizing.
-  */
+   Cached random pizza elements to avoid redundant and unnecessary query.
+   Pulled dx calculation out of the loop and calculated it only once to avoid redundant calculations.
+   */
   function changePizzaSizes(size) {
     var randomPizzas = document.getElementsByClassName("randomPizzaContainer");
     var pizza = randomPizzas[0];
@@ -464,7 +463,7 @@ var resizePizzas = function(size) {
     var newWidth = (pizza.offsetWidth + dx) + 'px';
     var length = randomPizzas.length;
     for (var i = 0; i < length; i++) {
-        randomPizzas[i].style.width = newWidth;
+      randomPizzas[i].style.width = newWidth;
     }
   }
 
@@ -523,10 +522,10 @@ function getPhaseArray() {
 }
 
 /*
-Used getElementsByClassName instead of querySelectorAll to increase the query speed,
-Pre-calculated all phase offsets to remove the redundant calculation.
-Also called document.body.scrollTop only once to avoid unnecessary forced layouts.
-*/
+ Used getElementsByClassName instead of querySelectorAll to increase the query speed,
+ Pre-calculated all phase offsets to remove the redundant calculation.
+ Also called document.body.scrollTop only once to avoid unnecessary forced layouts.
+ */
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
@@ -556,43 +555,69 @@ window.addEventListener('scroll', function() {
 
 // Generates the sliding pizzas when the page loads.
 /*
-Cloned an existing element instead of creating a new one every time to gain a bit of speed.
-Set the position style within the loop instead of calling updatePositions() to avoid another iteration of the same loop.
-Tse some of the refactored code from updatePositions() for DRY,
-Used document fragment to append elements (pizzas) in a single call to avoid multiple layouts.
-Also used translate3d to put each moving pizza on a new layer.
-*/
-document.addEventListener('DOMContentLoaded', function () {
-  var phaseArray = getPhaseArray();
-  var fragment = document.createDocumentFragment();
+ Cloned an existing element instead of creating a new one every time to gain a bit of speed.
+ Set the position style within the loop instead of calling updatePositions() to avoid another iteration of the same loop.
+ Tse some of the refactored code from updatePositions() for DRY,
+ Used document fragment to append elements (pizzas) in a single call to avoid multiple layouts.
+ Also used translate3d to put each moving pizza on a new layer.
+ */
+document.addEventListener('DOMContentLoaded', addMovingPizzas);
 
-  function CloneAndAppendNewPizzaElement(pizzaElement, i) {
+function addMovingPizzas() {
+    var phaseArray = getPhaseArray();
+    var fragment = document.createDocumentFragment();
     var cols = 8;
     var s = 256;
+    function CloneAndAppendNewPizzaElement(pizzaElement, i) {
 
-    var clonedPizza = pizzaElement.cloneNode(true);
-    var basicLeft = (i % cols) * s;
-    clonedPizza.basicLeft = basicLeft;
-    clonedPizza.style.top = (Math.floor(i / cols) * s) + 'px';
-    clonedPizza.style.left = basicLeft + phaseArray[i % PHASE_COUNT] + 'px';
 
-    fragment.appendChild(clonedPizza);
-  }
+        var clonedPizza = pizzaElement.cloneNode(true);
+        var basicLeft = (i % cols) * s;
+        clonedPizza.basicLeft = basicLeft;
+        clonedPizza.style.top = (Math.floor(i / cols) * s) + 'px';
+        clonedPizza.style.left = basicLeft + phaseArray[i % PHASE_COUNT] + 'px';
 
-  var pizzaElement = document.createElement('img');
-  pizzaElement.className = 'mover';
-  pizzaElement.src = "images/pizza.png";
-  pizzaElement.style.height = "100px";
-  pizzaElement.style.width = "73.333px";
-  pizzaElement.style.transform = "translate3d(0,0,0)";
+        fragment.appendChild(clonedPizza);
+    }
 
-  /*
-  Reduced the number of moving pizzas to 32, which is enough for most cases
-  */
-  for (var i = 0; i < 32; i++) {
-      CloneAndAppendNewPizzaElement(pizzaElement, i);
-  }
+    var pizzaElement = document.createElement('img');
+    pizzaElement.className = 'mover';
+    pizzaElement.src = "images/pizza.png";
+    pizzaElement.style.height = "100px";
+    pizzaElement.style.width = "73.333px";
+    pizzaElement.style.transform = "translate3d(0,0,0)";
 
-  var firstMovingPizza = document.getElementById("movingPizzas1");
-  firstMovingPizza.appendChild(fragment);
-});
+    /*
+        Calculates a number of pizzas required to fill the page.
+        The calculation is not optimized and therefore doesn't calculate the absolute
+        minimum number of pizzas. Regardless of the width, it will assume the same
+        number of columns. The number of rows required is calculated using innerHeight.
+     */
+    var frameHeight = window.innerHeight;
+    var pizzaCount = cols * Math.ceil(frameHeight/s);
+
+    for (var i = 0; i < pizzaCount; i++) {
+        CloneAndAppendNewPizzaElement(pizzaElement, i);
+    }
+
+    var firstMovingPizza = document.getElementById("movingPizzas1");
+    firstMovingPizza.appendChild(fragment);
+}
+
+/*
+   This event handler removes all moving pizzas when the frame is resized and then recalculate
+   the number of pizzas required.
+ */
+window.addEventListener('resize', resetAllMovingPizzas);
+
+function resetAllMovingPizzas(){
+    removeAllMovingPizzas();
+    addMovingPizzas();
+}
+
+function removeAllMovingPizzas(){
+    var firstMovingPizza = document.getElementById("movingPizzas1");
+    while (firstMovingPizza.firstChild) {
+        firstMovingPizza.removeChild(firstMovingPizza.firstChild);
+    }
+}
